@@ -1,10 +1,8 @@
-tgt_len = float(input("what is the target length (nautical miles)? "))
+tgt_len = float(input("what is the target length (ft)? ")) / 6076.118
 ord = int(input("how much ordinance are you carrying? "))
-hspd = (float(input("what is your speed (knots)? ")) /60)
+hspd = (float(input("what is your speed (knots)? ")) /60) /60
 intvs = [0.06, 0.1, 0.14]
 comp_intvs = {}
-
-# note: for now all in ft
 
 tru_intv = tgt_len/hspd/ord
 
