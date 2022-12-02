@@ -1,4 +1,4 @@
-tgt_len = float(input("what is the target length (ft)? ")) / 6076.118
+tgt_len = float(input("what is the target length (ft)? ")) / 6076.118 # convert to nm
 ord = int(input("how much ordinance are you carrying? "))
 hspd = (float(input("what is your speed (knots)? ")) /60) /60
 intvs = [0.06, 0.1, 0.14]
