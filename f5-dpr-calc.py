@@ -1,4 +1,6 @@
 import heapq
+import matplotlib.pyplot as plt
+import os
 
 #define functions
 
@@ -13,30 +15,40 @@ def deviation(input, original_num):
     return (original_num-input)/(original_num)
 
 #----------------------------------------------------------------
-
 # database of mils
 
-#   ang:{alt:{kias:{mils}}
+#   ang:[{alt:[{kias:mils]}]
 mk82_mils = {
-    10:{700:{520:{45}}},
-    15:{{1000:{{400:{87}},{450:{57}},{475:{52}},{500:{42}},{550:{32}}}},{1500:{{400:{113}},{450:{92}},{475:{77}},{500:{65}},{550:{51}}}},{2000},{3000}},
-    20:{},
-    25:{},
-    30:{},
-    35:{},
-    40:{},
-    45:{},
-    50:{},
-    60:{}
+    10:[{700:[{520:45}]}],
+
+    15:[{1000:[{400:87},{450:57},{475:52},{500:42},{550:32}]},
+        {1500:[{400:113},{450:92},{475:77},{500:65},{550:51}]},
+        {2000:[{400:140},{450:107},{475:98},{500:83},{550:69}]},
+        {3000:[{400:200},{450:146},{475:134},{500:122},{550:101}]}],
+
+    20:[{1000:[{400:62},{450:44},{475:32},{500:30},{550:24}]},
+        {1500},
+        {2000},
+        {3000},
+        {4000}],
+
+    30:[],
+    
+    40:[],
+    
+    45:[],
+    
+    50:[],
+    
+    60:[]
              }
 
 snake_mils = {}
 
 hydra_mils = {}
 
-
 #----------------------------------------------------------------
-
+# user inputs
 
 # ask user for target/release values
 release_kias = int(input("Release kias: ")) # knots at time of release
@@ -51,17 +63,17 @@ while True:
         break
 
 while True:
-    release_ang = int(input("Release angle in degrees: "))
-    if 0 <= release_ang <= 90:
+    release_ang = int(input("Release angle in degrees (multiples of 5): "))
+    if 0 <= release_ang <= 90 and release_ang%5 == 0:
         break
     else:
         print("Invalid release angle, try again.")
 
 #----------------------------------------------------------------
+# math
 
-if ord_type == "mk82":
-    print(ord_type)
-elif ord_type == "snake":
-    print(ord_type)
-else:
-    print(ord_type)
+#----------------------------------------------------------------
+# output
+
+os.system('cls')
+print("ordanance : " + str(ord_type) + " | " + "")
