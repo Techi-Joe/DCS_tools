@@ -7,27 +7,32 @@ import heapq
 def find_nearest_num(input, comparison_data):
     return heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))[0]
 
+# this function compares two numbers
+# and returns the deviation between them as a float
+def deviation(input, original_num):
+    return (original_num-input)/(original_num)
+
 #----------------------------------------------------------------
 
 # database of mils
 
-#            ang:{alt:{kias:{mils}}
-mk82_type = {
-             10:{700:{520:{45}}},
-             15:{},
-             20:{},
-             25:{},
-             30:{},
-             35:{},
-             40:{},
-             45:{},
-             50:{},
-             60:{}
+#   ang:{alt:{kias:{mils}}
+mk82_mils = {
+    10:{700:{520:{45}}},
+    15:{{1000:{{400:{87}},{450:{57}},{475:{52}},{500:{42}},{550:{32}}}},{1500:{{400:{113}},{450:{92}},{475:{77}},{500:{65}},{550:{51}}}},{2000},{3000}},
+    20:{},
+    25:{},
+    30:{},
+    35:{},
+    40:{},
+    45:{},
+    50:{},
+    60:{}
              }
 
-snake_type = {}
+snake_mils = {}
 
-hydra_type = {}
+hydra_mils = {}
 
 
 #----------------------------------------------------------------
