@@ -1,3 +1,14 @@
+import heapq
+
+#define functions
+
+# This function takes an input and compares it against the
+# comparison data to find the closest match
+def find_nearest_num(input, comparison_data):
+    return heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))[0]
+
+#----------------------------------------------------------------
+
 # database of mils
 
 #            ang:{alt:{kias:{mils}}
@@ -40,6 +51,8 @@ while True:
         break
     else:
         print("Invalid release angle, try again.")
+
+#----------------------------------------------------------------
 
 if ord_type == "mk82":
     print(ord_type)
