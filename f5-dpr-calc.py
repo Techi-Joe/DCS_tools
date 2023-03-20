@@ -1,3 +1,29 @@
+# database of mils
+
+#            ang:{alt:{kias:{mils}}
+mk82_type = {
+             10:{700:{520:{45}}},
+             15:{},
+             20:{},
+             25:{},
+             30:{},
+             35:{},
+             40:{},
+             45:{},
+             50:{},
+             60:{}
+             }
+
+snake_type = {}
+
+hydra_type = {}
+
+
+#----------------------------------------------------------------
+
+
+# ask user for target/release values
+release_kias = int(input("Release kias: ")) # knots at time of release
 trgt_hgt = float(input("target height above sea lvl in ft: ")) # target height in feet for precision
 release_hgt = float(input("release height in ft: ")) # release height in feet for precision
 ords = {"mk82", "snake", "hydra"}
@@ -8,13 +34,16 @@ while True:
     else:
         break
 
-release_ang = int(input("Release angle in degrees: "))
-
-
+while True:
+    release_ang = int(input("Release angle in degrees: "))
+    if 0 <= release_ang <= 90:
+        break
+    else:
+        print("Invalid release angle, try again.")
 
 if ord_type == "mk82":
-    print("mk82 type")
+    print(ord_type)
 elif ord_type == "snake":
-    print("snake type")
+    print(ord_type)
 else:
-    print("hydra type")
+    print(ord_type)
