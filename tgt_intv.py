@@ -17,7 +17,7 @@ for intv in intvs:
         flag = True
 if not flag:
     comp_intvs = {0.00: min(intvs)}
-        
+
 print("\nperfect drop interval: " + str(tru_intv))
 print("best possible drop interval: " + str(comp_intvs[min(comp_intvs)]))
 if (comp_intvs[min(comp_intvs)] > tru_intv):
