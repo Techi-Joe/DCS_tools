@@ -94,32 +94,54 @@ snake_mils = {
 #----------------------------------------------------------------
 # user inputs
 
+flag = False
 # ask user for target/release values
 release_kias = int(input("Release kias: ")) # knots at time of release
-trgt_hgt = float(input("target height above sea level in ft: ")) # target height in feet for precision
-release_hgt = float(input("release height in ft: ")) # release height in feet for precision
-ords = {"mk82", "snake"}
-while True:
-    ord_type = input("ordanance type (mk82 or snake): ")
-    if ord_type not in ords:
-        print ("Invalid ordanance type, try again.")
-    else:
-        break
 
-while True:
-    release_ang = int(input("Release angle in degrees (divisable by 5): "))
-    if 0 <= release_ang <= 90 and release_ang%5 == 0:
-        break
-    else:
-        print("Invalid release angle, try again.")
+if release_kias == -1: # use -1 as test value
+    flag = True
+
+if not flag:
+    trgt_hgt = float(input("target height above sea level in ft: ")) # target height in feet for precision
+    release_hgt = float(input("release height in ft: ")) # release height in feet for precision
+    ords = {"mk82", "snake"}
+    while True:
+        ord_type = input("ordanance type (mk82 or snake): ")
+        if ord_type not in ords:
+            print ("Invalid ordanance type, try again.")
+        else:
+            break
+
+    while True:
+        release_ang = int(input("Release angle in degrees (divisable by 5): "))
+        if 0 <= release_ang <= 90 and release_ang%5 == 0:
+            break
+        else:
+            print("Invalid release angle, try again.")
+    
+    hgt_abv_trgt = release_hgt-trgt_hgt # height above target
+else:
+    print("entering test values!")
+    hgt_abv_trgt = 3833
+    ord_type = "mk82"
+    release_kias = 510
+    release_ang = 13
+
 
 os.system('cls')
-print("ordanance : " + str(ord_type) + " | " + "")
+print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(hgt_abv_trgt) + " | " + "angle : " + str(release_ang) + "°")
 
 #----------------------------------------------------------------
 # computation of mils
 
-#! remember to use tqdm in unnested for loops (progress bars)
+modifier = 0.00 # variation in nums to apply to mils
+
+if ord_type == "mk82":
+    angle = mk82_mils[find_nearest_num(release_ang, mk82_mils.keys())]
+    alt = find_nearest_num(hgt_abv_trgt, angle)
+else:
+    print("snake")
+
 
 #----------------------------------------------------------------
 # output
