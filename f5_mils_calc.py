@@ -134,6 +134,7 @@ print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + 
 
 #----------------------------------------------------------------
 # computation of mils
+#TODO: implement abs value for % without changing multiplier
 
 modifier = 0.00 # variation in nums to apply to mils, also effects accuracy
 
