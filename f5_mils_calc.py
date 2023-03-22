@@ -8,12 +8,13 @@ from tqdm import tqdm
 # This function takes an input and compares it against the
 # comparison data to find the closest match
 def find_nearest_num(input, comparison_data):
-    return heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))[0]
+    val = heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))[0]
+    return val
 
 # this function compares two numbers
 # and returns the deviation between them as a float
 def deviation(input, original_num):
-    return (original_num-input)/(original_num)
+    return (original_num-input)/(original_num)/100
 
 #----------------------------------------------------------------
 # database of mils
@@ -129,20 +130,34 @@ else:
 
 
 os.system('cls')
-print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(hgt_abv_trgt) + " | " + "angle : " + str(release_ang) + "°")
+print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(hgt_abv_trgt) + "ft" + " | " + "angle : " + str(release_ang) + "°")
 
 #----------------------------------------------------------------
 # computation of mils
 
-modifier = 0.00 # variation in nums to apply to mils
+modifier = 0.00 # variation in nums to apply to mils, also effects accuracy
 
 if ord_type == "mk82":
-    angle = mk82_mils[find_nearest_num(release_ang, mk82_mils.keys())]
-    alt = find_nearest_num(hgt_abv_trgt, angle)
+    
+    angle_attributes = mk82_mils[find_nearest_num(release_ang, mk82_mils.keys())]
+
+    #find nearest angle
+    angle_list = mk82_mils.keys()
+    angle = find_nearest_num(release_ang, mk82_mils.keys())
+    modifier += float(deviation(angle,release_ang))
+
+    #find nearest altitude
+    alt_list = []
+    alt_num = 0
+    for i in tqdm (range(len(angle_attributes)),desc="calculating altitude...",ascii=False,ncols=75):
+        alt_list.append(angle_attributes[i].keys())
+        alt_num = i
+    alt = find_nearest_num(hgt_abv_trgt, alt_list[alt_num])
+    modifier += float(deviation(alt,hgt_abv_trgt))
 else:
     print("snake")
-
 
 #----------------------------------------------------------------
 # output
 
+print("accuracy: " + str(int((1.00-modifier)*100)) + "%")
