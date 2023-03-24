@@ -1,20 +1,23 @@
 import heapq
 import matplotlib.pyplot as plt
 import os
-from tqdm import tqdm
 
 # define functions
 
 # This function takes an input and compares it against the
 # comparison data to find the closest match
 def find_nearest_num(input, comparison_data):
-    val = heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))[0]
-    return val
+    return heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))
 
 # this function compares two numbers
 # and returns the deviation between them as a float
 def deviation(input, original_num):
-    return (original_num-input)/(original_num)/100
+    if (original_num-input)/(original_num) != 0:
+        deviation.counter += 1
+        return ((original_num-input)/(original_num))/deviation.counter
+    else:
+        return 0.00
+
 
 #----------------------------------------------------------------
 # database of mils
@@ -123,10 +126,10 @@ if not flag:
     hgt_abv_trgt = release_hgt-trgt_hgt # height above target
 else:
     print("entering test values!")
-    hgt_abv_trgt = 3833
+    hgt_abv_trgt = 1100
     ord_type = "mk82"
     release_kias = 510
-    release_ang = 13
+    release_ang = 16
 
 
 os.system('cls')
@@ -134,31 +137,38 @@ print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + 
 
 #----------------------------------------------------------------
 # computation of mils
-#TODO: implement abs value for % without changing multiplier
 
-modifier = 0.00 # variation in nums to apply to mils, also effects accuracy
+modifier = 0.00 # variation in nums to apply to mils
+PercentModifier = 0.00 # variation in accuracy
+deviation.counter = 0 # number of deviation calculations
 
 if ord_type == "mk82":
-    
-    angle_attributes = mk82_mils[find_nearest_num(release_ang, mk82_mils.keys())]
 
-    #find nearest angle
+    # find nearest angle
     angle_list = mk82_mils.keys()
-    angle = find_nearest_num(release_ang, mk82_mils.keys())
-    modifier += float(deviation(angle,release_ang))
+    angle = find_nearest_num(release_ang, angle_list)[0]
+    angle_attributes = mk82_mils.get(angle)
+    print("angle_attributes: "+ str(angle_attributes))
+    modifier += float(deviation(release_ang,angle))
+    PercentModifier += abs(modifier)
+    print("angle: " + str(angle))
 
-    #find nearest altitude
+    # find nearest altitude
     alt_list = []
-    alt_num = 0
-    for i in tqdm (range(len(angle_attributes)),desc="calculating altitude...",ascii=False,ncols=75):
-        alt_list.append(angle_attributes[i].keys())
-        alt_num = i
-    alt = find_nearest_num(hgt_abv_trgt, alt_list[alt_num])
-    modifier += float(deviation(alt,hgt_abv_trgt))
+    for i in range(len(mk82_mils[angle])):
+        alt_list.append(*mk82_mils[angle][i].keys())
+    alt = find_nearest_num(hgt_abv_trgt, alt_list)[0]
+    modifier += float(deviation(hgt_abv_trgt,alt))
+    PercentModifier += abs(modifier)
+    print("alt: " + str(alt))
+
+    # find nearest kias
+
 else:
     print("snake")
 
 #----------------------------------------------------------------
 # output
 
-print("accuracy: " + str(int((1.00-modifier)*100)) + "%")
+print("modifier: " + str(modifier)) #! multiply by 200 and add to closest mils to get new mils
+print("accuracy: " + str(int((1.00-PercentModifier)*100)) + "%")
