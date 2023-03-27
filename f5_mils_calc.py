@@ -121,10 +121,10 @@ if release_kias != -1: # use -1 as test value
     hgt_abv_trgt = release_hgt-trgt_hgt # height above target
 else:
     # test values
-    hgt_abv_trgt = 3300
-    ord_type = "mk82"
-    release_kias = 510
-    release_ang = 15
+    hgt_abv_trgt = 1000
+    ord_type = "snake"
+    release_kias = 530
+    release_ang = 5
 
 
 #----------------------------------------------------------------
@@ -140,24 +140,24 @@ elif ord_type == "snake":
     ord_dict = snake_mils
 
 # find nearest angle
-angle_list = mk82_mils.keys()
+angle_list = ord_dict.keys()
 angle = find_nearest_num(release_ang, angle_list)[0]
-angle_attributes = mk82_mils.get(angle)
+angle_attributes = ord_dict.get(angle)
 modifier += float(deviation(release_ang,angle))
 PercentModifier += abs(modifier)
 
 # find nearest altitude
 alt_list = []
 alt_num = 0
-for i in range(len(mk82_mils[angle])):
-    alt_list.append(*mk82_mils[angle][i].keys())
+for i in range(len(ord_dict[angle])):
+    alt_list.append(*ord_dict[angle][i].keys())
 alt = find_nearest_num(hgt_abv_trgt, alt_list)[0]
-for k in range(len(mk82_mils[angle])):
-    if int(*mk82_mils[angle][k].keys()) == alt:
+for k in range(len(ord_dict[angle])):
+    if int(*ord_dict[angle][k].keys()) == alt:
         alt_num = k
 modifier += float(deviation(hgt_abv_trgt,alt))
 PercentModifier += abs(modifier)
-alt_attributes = mk82_mils[angle][alt_num][alt]
+alt_attributes = ord_dict[angle][alt_num][alt]
 
 # find nearest kias
 kias_list = []
