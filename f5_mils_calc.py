@@ -1,6 +1,7 @@
 import heapq
 import matplotlib.pyplot as plt
 import os
+import time
 
 # define functions
 
@@ -18,6 +19,12 @@ def deviation(input, original_num):
     else:
         return 0.00
 
+# this function is used for graphing output
+def line_plot(numbers,xlabel,ylabel):
+    plt.plot(numbers)
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.show()
 
 #----------------------------------------------------------------
 # database of mils
@@ -98,14 +105,10 @@ snake_mils = {
 #----------------------------------------------------------------
 # user inputs
 
-flag = False
 # ask user for target/release values
 release_kias = int(input("Release kias: ")) # knots at time of release
 
-if release_kias == -1: # use -1 as test value
-    flag = True
-
-if not flag:
+if release_kias != -1: # use -1 as test value
     trgt_hgt = float(input("target height above sea level in ft: ")) # target height in feet for precision
     release_hgt = float(input("release height in ft: ")) # release height in feet for precision
     ords = {"mk82", "snake"}
@@ -125,15 +128,12 @@ if not flag:
     
     hgt_abv_trgt = release_hgt-trgt_hgt # height above target
 else:
-    print("entering test values!")
-    hgt_abv_trgt = 1100
+    # test values
+    hgt_abv_trgt = 3300
     ord_type = "mk82"
     release_kias = 510
-    release_ang = 16
+    release_ang = 15
 
-
-os.system('cls')
-print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(hgt_abv_trgt) + "ft" + " | " + "angle : " + str(release_ang) + "°")
 
 #----------------------------------------------------------------
 # computation of mils
@@ -144,31 +144,67 @@ deviation.counter = 0 # number of deviation calculations
 
 if ord_type == "mk82":
 
+
     # find nearest angle
     angle_list = mk82_mils.keys()
     angle = find_nearest_num(release_ang, angle_list)[0]
     angle_attributes = mk82_mils.get(angle)
-    print("angle_attributes: "+ str(angle_attributes))
     modifier += float(deviation(release_ang,angle))
     PercentModifier += abs(modifier)
-    print("angle: " + str(angle))
+
 
     # find nearest altitude
     alt_list = []
+    alt_num = 0
+
     for i in range(len(mk82_mils[angle])):
         alt_list.append(*mk82_mils[angle][i].keys())
+
     alt = find_nearest_num(hgt_abv_trgt, alt_list)[0]
+
+    for k in range(len(mk82_mils[angle])):
+        if int(*mk82_mils[angle][k].keys()) == alt:
+            alt_num = k
+
     modifier += float(deviation(hgt_abv_trgt,alt))
     PercentModifier += abs(modifier)
-    print("alt: " + str(alt))
+    alt_attributes = mk82_mils[angle][alt_num][alt]
+
 
     # find nearest kias
+    kias_list = []
+    kias_num = 0
+    for b in range(len(alt_attributes)):
+        kias_list.append(*alt_attributes[b].keys())
+    kias = find_nearest_num(release_kias, kias_list)[0]
+    for c in range(len(alt_attributes)):
+        if int(*alt_attributes[c].keys()) == kias:
+            kias_num = c
+    
 
+    # Finally! The actual mils! Yum!
+    mils = int(*alt_attributes[kias_num].values()) - (modifier)
 else:
     print("snake")
 
 #----------------------------------------------------------------
 # output
 
-print("modifier: " + str(modifier)) #! multiply by 200 and add to closest mils to get new mils
-print("accuracy: " + str(int((1.00-PercentModifier)*100)) + "%")
+# user input readback
+os.system('cls')
+print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(int(hgt_abv_trgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
+
+# accuracy based on deviation
+print("accuracy: " + str(int((1.00-(PercentModifier)/2)*100)) + "%")
+
+# final mils are printed
+print("Mils: " + str(int(mils)))
+time.sleep(3)
+
+# graphing
+while True:
+    graph = input("Type S to show graphs or type X to quit: ")
+    if graph == "S" or graph == "s":
+        graph_type = input("1 - altitude \n2 - angle\n3 - airspeed\nx - exit")
+        if graph_type == 1:
+            
