@@ -135,49 +135,45 @@ PercentModifier = 0.00 # variation in accuracy
 deviation.counter = 0 # number of deviation calculations
 
 if ord_type == "mk82":
+    ord_dict = mk82_mils
+elif ord_type == "snake":
+    ord_dict = snake_mils
 
+# find nearest angle
+angle_list = mk82_mils.keys()
+angle = find_nearest_num(release_ang, angle_list)[0]
+angle_attributes = mk82_mils.get(angle)
+modifier += float(deviation(release_ang,angle))
+PercentModifier += abs(modifier)
 
-    # find nearest angle
-    angle_list = mk82_mils.keys()
-    angle = find_nearest_num(release_ang, angle_list)[0]
-    angle_attributes = mk82_mils.get(angle)
-    modifier += float(deviation(release_ang,angle))
-    PercentModifier += abs(modifier)
+# find nearest altitude
+alt_list = []
+alt_num = 0
+for i in range(len(mk82_mils[angle])):
+    alt_list.append(*mk82_mils[angle][i].keys())
+alt = find_nearest_num(hgt_abv_trgt, alt_list)[0]
+for k in range(len(mk82_mils[angle])):
+    if int(*mk82_mils[angle][k].keys()) == alt:
+        alt_num = k
+modifier += float(deviation(hgt_abv_trgt,alt))
+PercentModifier += abs(modifier)
+alt_attributes = mk82_mils[angle][alt_num][alt]
 
+# find nearest kias
+kias_list = []
+kias_num = 0
+for b in range(len(alt_attributes)):
+    kias_list.append(*alt_attributes[b].keys())
+kias = find_nearest_num(release_kias, kias_list)[0]
+for c in range(len(alt_attributes)):
+    if int(*alt_attributes[c].keys()) == kias:
+        kias_num = c
+modifier += float(deviation(release_kias,*alt_attributes[kias_num]))
+PercentModifier += abs(modifier)
 
-    # find nearest altitude
-    alt_list = []
-    alt_num = 0
+# Finally! The actual mils! Yum!
+mils = int(*alt_attributes[kias_num].values()) - (modifier)
 
-    for i in range(len(mk82_mils[angle])):
-        alt_list.append(*mk82_mils[angle][i].keys())
-
-    alt = find_nearest_num(hgt_abv_trgt, alt_list)[0]
-
-    for k in range(len(mk82_mils[angle])):
-        if int(*mk82_mils[angle][k].keys()) == alt:
-            alt_num = k
-
-    modifier += float(deviation(hgt_abv_trgt,alt))
-    PercentModifier += abs(modifier)
-    alt_attributes = mk82_mils[angle][alt_num][alt]
-
-
-    # find nearest kias
-    kias_list = []
-    kias_num = 0
-    for b in range(len(alt_attributes)):
-        kias_list.append(*alt_attributes[b].keys())
-    kias = find_nearest_num(release_kias, kias_list)[0]
-    for c in range(len(alt_attributes)):
-        if int(*alt_attributes[c].keys()) == kias:
-            kias_num = c
-    
-
-    # Finally! The actual mils! Yum!
-    mils = int(*alt_attributes[kias_num].values()) - (modifier)
-else:
-    print("snake")
 
 #----------------------------------------------------------------
 # output
