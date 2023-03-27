@@ -1,7 +1,5 @@
 import heapq
-import matplotlib.pyplot as plt
 import os
-import time
 
 # define functions
 
@@ -19,12 +17,6 @@ def deviation(input, original_num):
     else:
         return 0.00
 
-# this function is used for graphing output
-def line_plot(numbers,xlabel,ylabel):
-    plt.plot(numbers)
-    plt.ylabel(ylabel)
-    plt.xlabel(xlabel)
-    plt.show()
 
 #----------------------------------------------------------------
 # database of mils
@@ -199,12 +191,6 @@ print("accuracy: " + str(int((1.00-(PercentModifier)/2)*100)) + "%")
 
 # final mils are printed
 print("Mils: " + str(int(mils)))
-time.sleep(3)
 
-# graphing
-while True:
-    graph = input("Type S to show graphs or type X to quit: ")
-    if graph == "S" or graph == "s":
-        graph_type = input("1 - altitude \n2 - angle\n3 - airspeed\nx - exit")
-        if graph_type == 1:
-            
+# exit
+input("\npress enter to exit...")
