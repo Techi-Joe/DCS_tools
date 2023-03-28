@@ -12,8 +12,7 @@ def find_nearest_num(input, comparison_data):
 # and returns the deviation between them as a float
 def deviation(input, original_num):
     if original_num != 0 and (original_num-input)/(original_num) != 0:
-        deviation.counter += 1
-        return ((original_num-input)/(original_num))/deviation.counter
+        return ((original_num-input)/(original_num))
     else:
         return 0.00
 
@@ -121,10 +120,10 @@ if release_kias != -1: # use -1 as test value
     hgt_abv_trgt = release_hgt-trgt_hgt # height above target
 else:
     # test values
-    hgt_abv_trgt = 2500
-    ord_type = "mk82"
-    release_kias = 476
-    release_ang = 45
+    hgt_abv_trgt = 100
+    ord_type = "snake"
+    release_kias = 174
+    release_ang = 0
 
 
 #----------------------------------------------------------------
@@ -132,7 +131,6 @@ else:
 
 modifier = 0.00 # variation in nums to apply to mils
 PercentModifier = 0.00 # variation in accuracy
-deviation.counter = 0 # number of deviation calculations
 
 if ord_type == "mk82":
     ord_dict = mk82_mils
@@ -182,8 +180,13 @@ mils = int(int(*alt_attributes[kias_num].values()) - (modifier))
 os.system('cls')
 print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(int(hgt_abv_trgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
 
+
 # accuracy based on deviation
-print("accuracy: " + str(int((200-(PercentModifier))/2)) + "%")
+accuracy = int((200-PercentModifier)/2)
+if accuracy >= 0:
+    print("accuracy: " + str(accuracy) + "%")
+else:
+    print("warning: results very inaccurate. (accuracy returned %s)"%str(accuracy))
 
 # final mils are printed
 if 0 <= mils <= 200:
