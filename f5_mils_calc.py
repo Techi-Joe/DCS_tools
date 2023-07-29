@@ -10,9 +10,9 @@ def find_nearest_num(input, comparison_data):
 
 # this function compares two numbers
 # and returns the deviation between them as a float
-def deviation(input, original_num):
-    if original_num != 0 and (original_num-input)/(original_num) != 0:
-        return ((original_num-input)/(original_num))
+def deviation(input_num, original_num):
+    if original_num != 0 and input_num != 0 and original_num != input_num:
+        return (original_num - input_num) / original_num
     else:
         return 0.00
 
@@ -181,12 +181,15 @@ os.system('cls')
 print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(int(hgt_abv_trgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
 
 
-# accuracy based on deviation
-accuracy = int((200-PercentModifier)/2)
-if accuracy >= 0:
-    print("accuracy: " + str(accuracy) + "%")
-else:
-    print("warning: results very inaccurate. (accuracy returned %s)"%str(accuracy))
+# Calculate accuracy using absolute difference
+accuracy = abs(mils - int(*alt_attributes[kias_num].values()))
+
+# Calculate accuracy as a percentage
+accuracy_percent = max(100 - (accuracy / 200) * 100, 0)
+
+# Output accuracy
+print("Accuracy: {:.2f}%".format(accuracy_percent))
+
 
 # final mils are printed
 if 0 <= mils <= 200:
