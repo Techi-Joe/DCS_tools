@@ -178,7 +178,7 @@ mils = int(int(*alt_attributes[kias_num].values()) - (modifier))
 
 # user input readback
 os.system('cls')
-print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "height above target : " + str(int(hgt_abv_trgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
+print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "release altitude : " + str(int(release_hgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
 
 
 # Calculate accuracy using absolute difference
