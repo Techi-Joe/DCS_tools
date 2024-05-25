@@ -12,7 +12,8 @@ def find_nearest_num(input, comparison_data):
 # and returns the deviation between them as a float
 def deviation(input_num, original_num):
     if original_num != 0 and input_num != 0 and original_num != input_num:
-        return (original_num - input_num) / original_num
+        print(str(original_num) + "-" + str(input_num))
+        return ((original_num - input_num))
     else:
         return 0.00
 
@@ -120,14 +121,15 @@ if release_kias != -1: # use -1 as test value
     hgt_abv_trgt = release_hgt-trgt_hgt # height above target
 else:
     # test values
-    hgt_abv_trgt = 100
+    hgt_abv_trgt = 200
     ord_type = "snake"
-    release_kias = 174
+    release_kias = 400
     release_ang = 0
 
 
 #----------------------------------------------------------------
 # computation of mils
+#! change modifier to compare MILs instead of raw numbers
 
 modifier = 0.00 # variation in nums to apply to mils
 PercentModifier = 0.00 # variation in accuracy
@@ -142,6 +144,8 @@ angle_list = ord_dict.keys()
 angle = find_nearest_num(release_ang, angle_list)[0]
 angle_attributes = ord_dict.get(angle)
 modifier += float(deviation(release_ang,angle))
+print("angle") #!debug print
+print("modifier = " + str(modifier) + "\n") #!debug print
 PercentModifier += abs(modifier)
 
 # find nearest altitude
@@ -154,6 +158,8 @@ for k in range(len(ord_dict[angle])):
     if int(*ord_dict[angle][k].keys()) == alt:
         alt_num = k
 modifier += float(deviation(hgt_abv_trgt,alt))
+print("alt") #!debug print
+print("modifier = " + str(modifier) + "\n") #!debug print
 PercentModifier += abs(modifier)
 alt_attributes = ord_dict[angle][alt_num][alt]
 
@@ -167,18 +173,21 @@ for c in range(len(alt_attributes)):
     if int(*alt_attributes[c].keys()) == kias:
         kias_num = c
 modifier += float(deviation(release_kias,*alt_attributes[kias_num]))
+print("kias") #!debug print
+print("modifier = " + str(modifier) + "\n") #!debug print
 PercentModifier += abs(modifier)
 
 # Finally! The actual mils! Yum!
 mils = int(int(*alt_attributes[kias_num].values()) - (modifier))
+print("mils calc = " + str(*alt_attributes[kias_num].values()) + "-" + str(modifier)) #!debug print
 
 
 #----------------------------------------------------------------
 # output
 
 # user input readback
-os.system('cls')
-print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "release altitude : " + str(int(release_hgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
+#! os.system('cls')
+#! print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "release altitude : " + str(int(release_hgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
 
 
 # Calculate accuracy using absolute difference
@@ -188,12 +197,12 @@ accuracy = abs(mils - int(*alt_attributes[kias_num].values()))
 accuracy_percent = max(100 - (accuracy / 200) * 100, 0)
 
 # Output accuracy
-print("Accuracy: {:.2f}%".format(accuracy_percent))
+print("\nAccuracy: {:.2f}%".format(accuracy_percent-PercentModifier*10))
 
 
 # final mils are printed
 if 0 <= mils <= 200:
-    print("Mils: " + str(mils))
+    print("\nMils: " + str(mils))
 else:
     print("Conditions invalid. (Mils returned %s)"%str(mils))
 
