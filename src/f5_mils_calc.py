@@ -8,6 +8,11 @@ After obtaining user inputs for attack angle, target altitude, aircraft altitude
 it predicts MILs using the trained model and displays the result.
 Additionally, it includes an option to visualize the linear regression plane in a 3D plot.
 
+The mk82_mils and snake_mils dictionaries contains information about the MIL settings for deploying
+MK-82 or Snake Eye bombs at various angles, altitudes, and speeds (in knots indicated airspeed,
+or KIAS). The value "-1" indicates that a condition is not maintainable, meaning the bombs 
+cannot be accurately deployed under those specific conditions.
+
 Created by Techi-Joe
 '''
 
@@ -18,13 +23,7 @@ import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
 #----------------------------------------------------------------
-
-'''
-This database contains information about the MIL settings for deploying the MK-82 or Snake Eye bombs 
-at various angles, altitudes, and speeds (in knots indicated airspeed, or KIAS). 
-The value "-1" indicates that a condition is not maintainable, meaning the bombs cannot 
-be accurately deployed under those specific conditions.
-'''
+# Dictionaries for MILs:
 
 # format - angle:[{altitude:[{kias:mils}]}]
 
@@ -143,7 +142,7 @@ def plot_regression():
     ax.set_ylabel('Altitude')
     ax.set_zlabel('KIAS')
     ax.set_title('Linear Regression Plane')
-    
+
     plt.show()
 
 # handle the float inputs from the user
@@ -202,7 +201,9 @@ in_altitude = true_altitude - tgt_altitude
 
 # user input readback
 os.system('cls')
-print("ordanance : " + str(ord_type) + " | " + "speed : " + str(in_kias) + " KIAS" + " | " + "release altitude : " + str(int(true_altitude)) + " ft" + " | " + "angle : " + str(in_angle) + "°")
+print("ordanance : " + str(ord_type) + " | " + "speed : " + str(in_kias) + " KIAS"
+      + " | " + "release altitude : " + str(int(true_altitude)) + " ft" + " | "
+      + "angle : " + str(in_angle) + "°")
 
 # output predicted MILs
 predicted_mils = predict_mils(in_angle, in_altitude, in_kias)
