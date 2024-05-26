@@ -1,28 +1,14 @@
-import heapq
 import os
-
-# define functions
-
-# This function takes an input and compares it against the
-# comparison data to find the closest match
-def find_nearest_num(input, comparison_data):
-    return heapq.nsmallest(1, comparison_data, key=lambda x: abs(x-input))
-
-# this function compares two numbers
-# and returns the deviation between them as a float
-def deviation(input_num, original_num):
-    if original_num != 0 and input_num != 0 and original_num != input_num:
-        print(str(original_num) + "-" + str(input_num))
-        return ((original_num - input_num))
-    else:
-        return 0.00
-
+import numpy as np
+from sklearn.linear_model import LinearRegression
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 #----------------------------------------------------------------
+
 # database of mils
 
-# a "-1" denotes a condition 
-# that is not maintainable
+# a "-1" denotes a condition that is not maintainable
 
 # format - angle:[{altitude:[{kias:mils}]}]
 
@@ -93,118 +79,121 @@ snake_mils = {
 
     20:[{1000:[{600:60}]}]
 }
+#----------------------------------------------------------------
+# constants:
+
+ords = {"mk82", "snake"}
+
+data_points = []
+
+a,b,c,d = 0,0,0,0
+
+X,y = np.array([]), np.array([])
 
 #----------------------------------------------------------------
-# user inputs
+# functions:
 
-# ask user for target/release values
-release_kias = int(input("Release kias: ")) # knots at time of release
+# Extract data points from the dictionary
+def extract_from_dict(dictionary):
+    for angle, altitudes in dictionary.items():
+        for altitude_dict in altitudes:
+            for altitude, kias_dicts in altitude_dict.items():
+                for kias_dict in kias_dicts:
+                    for kias, mils in kias_dict.items():
+                        data_points.append((angle, altitude, kias, mils))
 
-if release_kias != -1: # use -1 as test value
-    trgt_hgt = float(input("target height above sea level in ft: ")) # target height in feet for precision
-    release_hgt = float(input("release height in ft: ")) # release height in feet for precision
-    ords = {"mk82", "snake"}
-    while True:
-        ord_type = input("ordanance type (mk82 or snake): ")
-        if ord_type not in ords:
-            print ("Invalid ordanance type, try again.")
-        else:
-            break
 
-    while True:
-        release_ang = int(input("Release angle in degrees (divisable by 5): "))
-        if 0 <= release_ang <= 90 and release_ang%5 == 0:
-            break
-        else:
-            print("Invalid release angle, try again.")
+# Function to predict MILs
+def predict_mils(angle, altitude, kias):
+    return round(a * angle + b * altitude + c * kias + d)
+
+# Function to plot regression
+def plot_regression():
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+
+    # Scatter plot of data points
+    ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=y, cmap='viridis', marker='o')
+
+    # Create a grid for plotting the regression plane
+    angle_range = np.linspace(X[:, 0].min(), X[:, 0].max(), 20)
+    altitude_range = np.linspace(X[:, 1].min(), X[:, 1].max(), 20)
+    angle_grid, altitude_grid = np.meshgrid(angle_range, altitude_range)
+    kias_grid = a * angle_grid + b * altitude_grid + d
+
+    ax.plot_surface(angle_grid, altitude_grid, kias_grid, color='red', alpha=0.5)
+
+    ax.set_xlabel('Angle')
+    ax.set_ylabel('Altitude')
+    ax.set_zlabel('KIAS')
+    ax.set_title('Linear Regression Plane')
     
-    hgt_abv_trgt = release_hgt-trgt_hgt # height above target
-else:
-    # test values
-    hgt_abv_trgt = 200
-    ord_type = "snake"
-    release_kias = 400
-    release_ang = 0
+    plt.show()
+
+# handle the float inputs from the user
+def float_input(q_string):
+    usr_in = float(0)
+    while True:
+        usr_in = -1.1273894
+        try:
+            usr_in = float(input(q_string))
+        except ValueError:
+            print("Please enter valid numerical value")
+        if usr_in == abs(usr_in):
+            break
+        else:
+            print("Number cannot be negative")
+    return usr_in
 
 
 #----------------------------------------------------------------
-# computation of mils
-#! change modifier to compare MILs instead of raw numbers
+# main code:
 
-modifier = 0.00 # variation in nums to apply to mils
-PercentModifier = 0.00 # variation in accuracy
-
+# ask user for ordanance type:
+while True:
+    ord_type = input("ordanance type (mk82 or snake): ")
+    if ord_type not in ords:
+        print ("Invalid ordanance type, try again.")
+    else:
+        break
 if ord_type == "mk82":
     ord_dict = mk82_mils
 elif ord_type == "snake":
     ord_dict = snake_mils
 
-# find nearest angle
-angle_list = ord_dict.keys()
-angle = find_nearest_num(release_ang, angle_list)[0]
-angle_attributes = ord_dict.get(angle)
-modifier += float(deviation(release_ang,angle))
-print("angle") #!debug print
-print("modifier = " + str(modifier) + "\n") #!debug print
-PercentModifier += abs(modifier)
+# extract the appropriate dictionary
+extract_from_dict(ord_dict)
 
-# find nearest altitude
-alt_list = []
-alt_num = 0
-for i in range(len(ord_dict[angle])):
-    alt_list.append(*ord_dict[angle][i].keys())
-alt = find_nearest_num(hgt_abv_trgt, alt_list)[0]
-for k in range(len(ord_dict[angle])):
-    if int(*ord_dict[angle][k].keys()) == alt:
-        alt_num = k
-modifier += float(deviation(hgt_abv_trgt,alt))
-print("alt") #!debug print
-print("modifier = " + str(modifier) + "\n") #!debug print
-PercentModifier += abs(modifier)
-alt_attributes = ord_dict[angle][alt_num][alt]
+# Split the data into inputs (X) and outputs (y)
+X = np.array([[point[0], point[1], point[2]] for point in data_points])
+y = np.array([point[3] for point in data_points])
 
-# find nearest kias
-kias_list = []
-kias_num = 0
-for b in range(len(alt_attributes)):
-    kias_list.append(*alt_attributes[b].keys())
-kias = find_nearest_num(release_kias, kias_list)[0]
-for c in range(len(alt_attributes)):
-    if int(*alt_attributes[c].keys()) == kias:
-        kias_num = c
-modifier += float(deviation(release_kias,*alt_attributes[kias_num]))
-print("kias") #!debug print
-print("modifier = " + str(modifier) + "\n") #!debug print
-PercentModifier += abs(modifier)
+# Create and fit the model
+model = LinearRegression()
+model.fit(X, y)
 
-# Finally! The actual mils! Yum!
-mils = int(int(*alt_attributes[kias_num].values()) - (modifier))
-print("mils calc = " + str(*alt_attributes[kias_num].values()) + "-" + str(modifier)) #!debug print
+# Coefficients
+a, b, c = model.coef_
+d = model.intercept_
 
+# User input for prediction
+in_angle = float_input("attack angle (degrees): ")
+tgt_altitude = float_input("target's altitude (ft ASL): ")
+true_altitude = float_input("your altitude (ft ASL): ")
+in_kias = float_input("your attack KIAS: ")
 
-#----------------------------------------------------------------
-# output
+in_altitude = true_altitude - tgt_altitude
 
 # user input readback
-#! os.system('cls')
-#! print("ordanance : " + str(ord_type) + " | " + "speed : " + str(release_kias) + " kias" + " | " + "release altitude : " + str(int(release_hgt)) + "ft" + " | " + "angle : " + str(release_ang) + "°")
+os.system('cls')
+print("ordanance : " + str(ord_type) + " | " + "speed : " + str(in_kias) + " KIAS" + " | " + "release altitude : " + str(int(true_altitude)) + " ft" + " | " + "angle : " + str(in_angle) + "°")
 
-
-# Calculate accuracy using absolute difference
-accuracy = abs(mils - int(*alt_attributes[kias_num].values()))
-
-# Calculate accuracy as a percentage
-accuracy_percent = max(100 - (accuracy / 200) * 100, 0)
-
-# Output accuracy
-print("\nAccuracy: {:.2f}%".format(accuracy_percent-PercentModifier*10))
-
-
-# final mils are printed
-if 0 <= mils <= 200:
-    print("\nMils: " + str(mils))
+# output predicted MILs
+predicted_mils = predict_mils(in_angle, in_altitude, in_kias)
+if 0 < predicted_mils < 200:
+    print(f"Predicted MILs: {predicted_mils}")
 else:
-    print("Conditions invalid. (Mils returned %s)"%str(mils))
+    print("Conditions invalid. (MILs returned %s)"%str(predicted_mils))
 
 # exit
 input("\npress enter to exit...")
