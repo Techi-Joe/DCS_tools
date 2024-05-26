@@ -8,6 +8,7 @@ After obtaining user inputs for attack angle, target altitude, aircraft altitude
 it predicts MILs using the trained model and displays the result.
 Additionally, it includes an option to visualize the linear regression plane in a 3D plot.
 
+Created by Techi-Joe
 '''
 
 import os
@@ -205,7 +206,7 @@ predicted_mils = predict_mils(in_angle, in_altitude, in_kias)
 if 0 < predicted_mils < 200:
     print(f"Predicted MILs: {predicted_mils}")
 else:
-    print("Conditions invalid. (MILs returned %s)"%str(predicted_mils))
+    print(f"Conditions invalid. (MILs returned {predicted_mils})")
 
 # exit
 input("\npress enter to exit...")
