@@ -8,7 +8,7 @@ After obtaining user inputs for attack angle, target altitude, aircraft altitude
 it predicts MILs using the trained model and displays the result.
 Additionally, it includes an option to visualize the linear regression plane in a 3D plot.
 
-The mk82_mils and snake_mils dictionaries contains information about the MIL settings for deploying
+The mk82_mils and snake_mils dictionaries contain information about the MIL settings for deploying
 MK-82 or Snake Eye bombs at various angles, altitudes, and speeds (in knots indicated airspeed,
 or KIAS). The value "-1" indicates that a condition is not maintainable, meaning the bombs 
 cannot be accurately deployed under those specific conditions.
