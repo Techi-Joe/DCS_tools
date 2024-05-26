@@ -1,3 +1,15 @@
+'''
+Predict MILs for a DCS F-5E Tiger II bombing run using linear regression based on input conditions.
+
+The function prompts the user to select an ordnance type ('mk82' or 'snake').
+It then extracts data points for the selected ordnance type from pre-defined dictionaries.
+Next, it trains a linear regression model using the extracted data points.
+After obtaining user inputs for attack angle, target altitude, aircraft altitude, and attack KIAS,
+it predicts MILs using the trained model and displays the result.
+Additionally, it includes an option to visualize the linear regression plane in a 3D plot.
+
+'''
+
 import os
 import numpy as np
 from sklearn.linear_model import LinearRegression
@@ -6,9 +18,9 @@ from mpl_toolkits.mplot3d import Axes3D
 
 #----------------------------------------------------------------
 
-# database of mils
-
-# a "-1" denotes a condition that is not maintainable
+'''
+This database contains information about the MIL settings for deploying the MK-82 or Snake Eye bombs at various angles, altitudes, and speeds (in knots indicated airspeed, or KIAS). The value "-1" indicates that a condition is not maintainable, meaning the bombs cannot be accurately deployed under those specific conditions.
+'''
 
 # format - angle:[{altitude:[{kias:mils}]}]
 
