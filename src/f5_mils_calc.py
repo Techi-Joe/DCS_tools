@@ -20,7 +20,10 @@ from mpl_toolkits.mplot3d import Axes3D
 #----------------------------------------------------------------
 
 '''
-This database contains information about the MIL settings for deploying the MK-82 or Snake Eye bombs at various angles, altitudes, and speeds (in knots indicated airspeed, or KIAS). The value "-1" indicates that a condition is not maintainable, meaning the bombs cannot be accurately deployed under those specific conditions.
+This database contains information about the MIL settings for deploying the MK-82 or Snake Eye bombs 
+at various angles, altitudes, and speeds (in knots indicated airspeed, or KIAS). 
+The value "-1" indicates that a condition is not maintainable, meaning the bombs cannot 
+be accurately deployed under those specific conditions.
 '''
 
 # format - angle:[{altitude:[{kias:mils}]}]
