@@ -108,7 +108,6 @@ X,y = np.array([]), np.array([])
 #----------------------------------------------------------------
 # functions:
 
-
 # Function to extract data points from the dictionary
 def extract_from_dict(dictionary):
     for angle, altitudes in dictionary.items():
@@ -169,7 +168,8 @@ def float_input(q_string):
             print("Please enter valid numerical value")
         if usr_in == abs(usr_in):
             break
-        print("Number cannot be negative")
+        if usr_in != -1.1:
+            print("Number cannot be negative")
     return usr_in
 
 
@@ -211,14 +211,16 @@ in_kias = float_input("your attack KIAS: ")
 
 in_altitude = true_altitude - tgt_altitude
 
-# user input readback
+# Clear the terminal
 if os.name == 'nt':
     os.system('cls')
 else:
     os.system('clear')
-print("ordanance : " + str(ord_type) + " | " + "speed : " + str(in_kias) + " KIAS"
-      + " | " + "release altitude : " + str(int(true_altitude)) + " ft" + " | "
-      + "angle : " + str(in_angle) + "°")
+
+# User input readback
+print("ordanance: " + str(ord_type) + " | " + "speed: " + str(round(in_kias)) + " KIAS"
+      + " | " + "release altitude: " + str(round(true_altitude)) + " ft" + " | "
+      + "angle: " + str(round(in_angle)) + "°")
 
 # output predicted MILs
 predicted_mils = predict_mils(in_angle, in_altitude, in_kias)
