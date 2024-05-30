@@ -6,7 +6,7 @@ It then extracts data points for the selected ordnance type from pre-defined dic
 Next, it trains a linear regression model using the extracted data points.
 After obtaining user inputs for attack angle, target altitude, aircraft altitude, and attack KIAS,
 it predicts MILs using the trained model and displays the result.
-Additionally, it includes an option to visualize the linear regression plane in a 3D plot.
+Additionally, it includes an option to visualize the linear regression in a 3D plot for debugging.
 
 The mk82_mils and snake_mils dictionaries contain information about the MIL settings for deploying
 MK-82 or Snake Eye bombs at various angles, altitudes, and speeds (in knots indicated airspeed,
@@ -25,7 +25,7 @@ from mpl_toolkits.mplot3d import Axes3D
 #----------------------------------------------------------------
 # Dictionaries for MILs:
 
-# format - angle:[{altitude:[{kias:mils}]}]
+# angle:[{altitude:[{kias:mils}]}]
 
 mk82_mils = {
     10:[{700:[{520:45}]}],
@@ -42,7 +42,7 @@ mk82_mils = {
         {3000:[{400:154},{450:118},{475:105},{500:92},{550:82}]},
         {3500:[{555:92}]},
         {4000:[{400:185},{450:145},{475:133},{500:121},{550:102}]}],
-    
+
     25:[{3000:[{560:60},{590:55}]}],
 
     30:[{1500:[{400:-1},{450:38},{475:30},{500:25},{550:18}]},
@@ -54,19 +54,19 @@ mk82_mils = {
 
     35:[{3000:[{560:40}]},
         {3200:[{580:40}]}],
-    
+
     40:[{3000:[{470:70}]},
         {3500:[{500:50}]},
         {4000:[{540:45}]},
         {6000:[{525:70}]}],
-    
+
     45:[{3000:[{400:-1},{450:-1},{475:-1},{500:23},{550:19}]},
         {4000:[{400:-1},{450:-1},{475:-1},{500:35},{550:28}]},
         {5000:[{400:-1},{450:-1},{475:-1},{500:49},{550:38}]},
         {9000:[{520:90}]}],
-    
+
     50:[{5000:[{500:45}]}],
-    
+
     60:[{4000:[{400:-1},{450:-1},{475:-1},{500:5},{550:2}]},
         {5000:[{400:-1},{450:-1},{475:-1},{500:10},{550:7}]},
         {6000:[{400:-1},{450:-1},{475:-1},{500:18},{550:14}]},
@@ -108,7 +108,8 @@ X,y = np.array([]), np.array([])
 #----------------------------------------------------------------
 # functions:
 
-# Extract data points from the dictionary
+
+# Function to extract data points from the dictionary
 def extract_from_dict(dictionary):
     for angle, altitudes in dictionary.items():
         for altitude_dict in altitudes:
@@ -122,8 +123,15 @@ def extract_from_dict(dictionary):
 def predict_mils(angle, altitude, kias):
     return round(a * angle + b * altitude + c * kias + d)
 
-# Function to plot regression
-def plot_regression():
+
+def plot_regression(in_predicted_point):
+    """
+    Plot the regression plane and the predicted point.
+
+    Args:
+        predicted_point (tuple): The input features and predicted MILs value
+                                 in the format (angle, altitude, kias).
+    """
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
 
@@ -138,6 +146,10 @@ def plot_regression():
 
     ax.plot_surface(angle_grid, altitude_grid, kias_grid, color='red', alpha=0.5)
 
+    # Plot the predicted point as a big red dot
+    predicted_angle, predicted_altitude, predicted_kias, predicted_mils_ = in_predicted_point
+    ax.scatter(predicted_angle, predicted_altitude, predicted_kias, c='red', s=100, marker='o')
+
     ax.set_xlabel('Angle')
     ax.set_ylabel('Altitude')
     ax.set_zlabel('KIAS')
@@ -145,19 +157,19 @@ def plot_regression():
 
     plt.show()
 
+
 # handle the float inputs from the user
 def float_input(q_string):
     usr_in = float(0)
     while True:
-        usr_in = -1.1273894
+        usr_in = -1.1
         try:
             usr_in = float(input(q_string))
         except ValueError:
             print("Please enter valid numerical value")
         if usr_in == abs(usr_in):
             break
-        else:
-            print("Number cannot be negative")
+        print("Number cannot be negative")
     return usr_in
 
 
@@ -173,7 +185,7 @@ while True:
         break
 if ord_type == "mk82":
     ord_dict = mk82_mils
-elif ord_type == "snake":
+else:
     ord_dict = snake_mils
 
 # extract the appropriate dictionary
@@ -192,7 +204,7 @@ a, b, c = model.coef_
 d = model.intercept_
 
 # User input for prediction
-in_angle = float_input("attack angle (degrees): ")
+in_angle = float_input("attack down angle (degrees): ")
 tgt_altitude = float_input("target's altitude (ft ASL): ")
 true_altitude = float_input("your altitude (ft ASL): ")
 in_kias = float_input("your attack KIAS: ")
@@ -200,7 +212,10 @@ in_kias = float_input("your attack KIAS: ")
 in_altitude = true_altitude - tgt_altitude
 
 # user input readback
-os.system('cls')
+if os.name == 'nt':
+    os.system('cls')
+else:
+    os.system('clear')
 print("ordanance : " + str(ord_type) + " | " + "speed : " + str(in_kias) + " KIAS"
       + " | " + "release altitude : " + str(int(true_altitude)) + " ft" + " | "
       + "angle : " + str(in_angle) + "°")
@@ -209,6 +224,10 @@ print("ordanance : " + str(ord_type) + " | " + "speed : " + str(in_kias) + " KIA
 predicted_mils = predict_mils(in_angle, in_altitude, in_kias)
 if 0 < predicted_mils < 200:
     print(f"Predicted MILs: {predicted_mils}")
+    predicted_point = (in_angle, in_altitude, in_kias, predicted_mils)
+
+    # Plot the regression and the predicted point - DEBUG
+    # plot_regression(predicted_point)
 else:
     print(f"Conditions invalid. (MILs returned {predicted_mils})")
 
